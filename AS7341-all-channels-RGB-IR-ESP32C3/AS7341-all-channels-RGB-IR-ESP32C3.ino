@@ -1,7 +1,4 @@
-/* This example will read all channels from the AS7341 and print out reported values */
-
 #include <Adafruit_AS7341.h>
-
 Adafruit_AS7341 as7341;
 
 
@@ -18,8 +15,8 @@ void setup() {
     while (1) { delay(10); }
   }
   
-  as7341.setATIME(100);
-  as7341.setASTEP(999);
+  as7341.setATIME(50);
+  as7341.setASTEP(499);
   as7341.setGain(AS7341_GAIN_256X);
 
   as7341.setLEDCurrent(4); // 4mA
@@ -29,6 +26,9 @@ void setup() {
 
 void loop() {
   uint16_t readings[12];
+  uint16_t flicker_freq = 0;
+
+  flicker_freq = as7341.detectFlickerHz();
 
   if (!as7341.readAllChannels(readings)){
     Serial.println("Error reading all channels!");
@@ -64,6 +64,16 @@ void loop() {
   Serial.println(readings[10]);
   Serial.print("ADC5/NIR      : ");
   Serial.println(readings[11]);
+
+  if (flicker_freq == 0) {
+      Serial.println("No flicker detected");
+  }else if (flicker_freq == 1) {
+      Serial.println("Flicker detected with unknown frequency");
+  }else {
+      Serial.print("Flicker detected at ");
+      Serial.print(flicker_freq);
+      Serial.println(" Hz");
+  }
 
   Serial.println();
 }
